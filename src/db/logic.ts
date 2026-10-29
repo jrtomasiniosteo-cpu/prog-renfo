@@ -45,16 +45,20 @@ export function weeksFor(settings: SettingsRow | undefined): ProgramWeek[] {
 
 /* ---------- références ---------- */
 
-/** Pose les références initiales si la table est vide. */
+/** Date antérieure à toute séance possible : les références initiales valent « depuis toujours ». */
+export const INIT_REF_DATE = '1970-01-01'
+
+/** Pose les références initiales si la table est vide (atomique : pas de doublon si appelé deux fois). */
 export async function ensureInitialRefs(program: Program): Promise<void> {
-  const n = await db.refs.count()
-  if (n > 0) return
-  const date = program.startDate
-  await db.refs.bulkAdd(
-    Object.entries(program.mainLifts).map(([lift, def]) => ({
-      lift, e1rm: def.default_e1rm, date, weekIndex: -1, source: 'init' as const,
-    })),
-  )
+  await db.transaction('rw', db.refs, async () => {
+    const n = await db.refs.count()
+    if (n > 0) return
+    await db.refs.bulkAdd(
+      Object.entries(program.mainLifts).map(([lift, def]) => ({
+        lift, e1rm: def.default_e1rm, date: INIT_REF_DATE, weekIndex: -1, source: 'init' as const,
+      })),
+    )
+  })
 }
 
 /** Référence manuelle (écran Réglages). Datée du jour → les séances suivantes repartent de là. */
@@ -63,12 +67,16 @@ export async function setManualRef(lift: string, e1rmValue: number, weekIndex: n
   await recomputeReferences()
 }
 
+/** Référence courante par lift à partir des lignes (pur, utilisable dans un liveQuery). */
+export function refsFromRows(rows: RefRow[]): Record<string, number> {
+  const out: Record<string, number> = {}
+  for (const r of [...rows].sort((a, b) => a.date.localeCompare(b.date) || ((a.id ?? 0) - (b.id ?? 0)))) out[r.lift] = r.e1rm
+  return out
+}
+
 /** Référence courante par lift (dernière ligne par date puis id). */
 export async function currentRefs(): Promise<Record<string, number>> {
-  const rows = await db.refs.orderBy('id').toArray()
-  const out: Record<string, number> = {}
-  for (const r of rows.sort((a, b) => a.date.localeCompare(b.date) || (a.id! - b.id!))) out[r.lift] = r.e1rm
-  return out
+  return refsFromRows(await db.refs.toArray())
 }
 
 /** Référence en vigueur juste avant une date donnée. */
@@ -83,22 +91,36 @@ function refsBefore(rows: RefRow[], date: string, excludeSessionIds: Set<number>
 
 interface LiftOutcome { lift: string; e1rm: number | null; mainRir: number | null; targetRir: number; isTest: boolean }
 
-/** Ce qu'une séance terminée dit de chaque lift de référence. */
+/**
+ * Ce qu'une séance terminée dit de chaque lift de référence.
+ * - bench_1rm : la charge réussie devient la référence (pas de formule e1RM)
+ * - top single @ RPE : compte dans l'e1RM de séance seulement si le RIR est saisi,
+ *   et n'est jamais la « série principale » de la règle RIR (un single lourd est voulu)
+ */
 function liftOutcomes(sets: SetRow[]): LiftOutcome[] {
-  const byLift = new Map<string, { sets: LoggedSet[]; targetRir: number; isTest: boolean }>()
+  const byLift = new Map<string, { sets: LoggedSet[]; work: LoggedSet[]; targetRir: number; isTest: boolean; oneRm: number | null }>()
   for (const s of sets) {
     const isRefMain = s.kind === 'main' && (s.exerciseId === 'squat' || s.exerciseId === 'bench_heavy')
     const isRefTest = s.kind === 'test' && (s.testKind === 'e1rm' || s.testKind === 'bench_1rm')
     if (!isRefMain && !isRefTest) continue
     if (!s.lift || !s.done || !s.load || !s.reps) continue
-    const cur = byLift.get(s.lift) ?? { sets: [], targetRir: s.targetRir ?? 2, isTest: isRefTest }
-    cur.sets.push({ load: s.load, reps: s.reps, rir: s.rir ?? (isRefTest ? 1 : s.targetRir ?? 2) })
-    if (s.targetRir !== null && !s.isTop) cur.targetRir = s.targetRir
+    const cur = byLift.get(s.lift) ?? { sets: [], work: [], targetRir: s.targetRir ?? 2, isTest: isRefTest, oneRm: null }
+    if (s.testKind === 'bench_1rm') {
+      cur.oneRm = Math.max(cur.oneRm ?? 0, s.load)
+    } else if (s.isTop) {
+      if (s.rir !== null) cur.sets.push({ load: s.load, reps: s.reps, rir: s.rir })
+    } else {
+      const logged = { load: s.load, reps: s.reps, rir: s.rir ?? (isRefTest ? 1 : s.targetRir ?? 2) }
+      cur.sets.push(logged)
+      cur.work.push(logged)
+      if (s.targetRir !== null) cur.targetRir = s.targetRir
+    }
     byLift.set(s.lift, cur)
   }
   return [...byLift.entries()].map(([lift, v]) => {
-    const ms = mainSet(v.sets)
-    return { lift, e1rm: sessionE1rm(v.sets), mainRir: ms?.rir ?? null, targetRir: v.targetRir, isTest: v.isTest }
+    const ms = mainSet(v.work)
+    const e = v.oneRm !== null ? Math.max(v.oneRm, sessionE1rm(v.sets) ?? 0) : sessionE1rm(v.sets)
+    return { lift, e1rm: e, mainRir: ms?.rir ?? null, targetRir: v.targetRir, isTest: v.isTest }
   })
 }
 
@@ -146,13 +168,15 @@ export async function recomputeReferences(): Promise<void> {
 /** Dernière séance terminée de chaque accessoire → historique pour la double progression. */
 export async function accessoryHistories(program: Program): Promise<Record<string, AccessoryHistory | null>> {
   const out: Record<string, AccessoryHistory | null> = {}
-  const doneIds = new Set((await db.sessions.where('status').equals('done').toArray()).map((s) => s.id!))
+  const done = await db.sessions.where('status').equals('done').toArray()
+  const order = new Map(done.sort((a, b) => a.date.localeCompare(b.date) || (a.id! - b.id!)).map((s, i) => [s.id!, i]))
   const ids = Object.entries(program.exercises).filter(([, e]) => e.type === 'accessory').map(([id]) => id)
   for (const id of ids) {
     const rows = (await db.sets.where('exerciseId').equals(id).toArray())
-      .filter((r) => doneIds.has(r.sessionId) && r.done && r.reps !== null)
+      .filter((r) => order.has(r.sessionId) && r.done && r.reps !== null)
     if (!rows.length) { out[id] = null; continue }
-    const lastSession = Math.max(...rows.map((r) => r.sessionId))
+    // dernière séance par DATE (pas par id : une séance saisie après coup ne doit pas primer)
+    const lastSession = rows.reduce((best, r) => (order.get(r.sessionId)! > order.get(best)! ? r.sessionId : best), rows[0].sessionId)
     const last = rows.filter((r) => r.sessionId === lastSession).sort((a, b) => a.setIndex - b.setIndex)
     const def = program.exercises[id] as AccessoryExercise
     out[id] = {

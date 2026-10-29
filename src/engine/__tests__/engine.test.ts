@@ -204,6 +204,15 @@ describe('calendrier', () => {
     expect(a.forcedMinimal).toBe(false)
     expect(b.forcedMinimal).toBe(true)
   })
+  it('déplacement vers le jour par défaut = pas de déplacement ; A et B toutes deux déplacées le même jour → B minimale', () => {
+    const s = scheduleWeek(P, weeks[1], P.defaultDays, [{ weekKey: weeks[1].key, type: 'A', weekday: 'wednesday' }])
+    expect(s.find((x) => x.type === 'A')!.moved).toBe(false)
+    const both = scheduleWeek(P, weeks[1], P.defaultDays, [
+      { weekKey: weeks[1].key, type: 'A', weekday: 'friday' }, { weekKey: weeks[1].key, type: 'B', weekday: 'friday' },
+    ])
+    expect(both.find((x) => x.type === 'A')!.forcedMinimal).toBe(false)
+    expect(both.find((x) => x.type === 'B')!.forcedMinimal).toBe(true)
+  })
   it("aujourd'hui / prochaine séance", () => {
     const t = todayAndNext(P, weeks, parseISODate('2026-11-11'), P.defaultDays)
     expect(t.today.map((x) => x.type)).toEqual(['A'])

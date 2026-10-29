@@ -53,7 +53,7 @@ export function NumField({ label, value, onChange, step = 1, min = 0, max, place
           onChange={(e) => setText(e.target.value)}
           onBlur={(e) => commit(e.target.value)}
           onFocus={(e) => e.target.select()}
-          style={{ textAlign: 'center', fontSize: 22, fontWeight: 700 }}
+          style={{ textAlign: "center", fontWeight: 700 }}
         />
         <button type="button" onClick={() => bump(step)} aria-label="plus">+</button>
       </div>

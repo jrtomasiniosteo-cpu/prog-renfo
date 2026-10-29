@@ -129,15 +129,16 @@ export function scheduleWeek(
   const byType = new Map<SessionType, { weekday: Weekday; moved: boolean }>()
   for (const t of types) {
     const mv = moves.find((m) => m.weekKey === week.key && m.type === t)
-    byType.set(t, { weekday: mv?.weekday ?? days[t], moved: !!mv })
+    const weekday = mv?.weekday ?? days[t]
+    // un déplacement vers le jour par défaut n'en est pas un
+    byType.set(t, { weekday, moved: !!mv && mv.weekday !== days[t] })
   }
 
   const out: ScheduledSession[] = []
   for (const [type, { weekday, moved }] of byType) {
-    // un autre type non déplacé occupe déjà ce jour et celui-ci y a été déplacé → l'autre passe en minimal
-    const forcedMinimal = [...byType.entries()].some(
-      ([t2, v2]) => t2 !== type && v2.weekday === weekday && v2.moved && !moved,
-    )
+    // Deux séances le même jour : seule la prioritaire (A > B > C) reste complète, les autres passent en minimale.
+    const sameDay = [...byType.entries()].filter(([, v]) => v.weekday === weekday).map(([t]) => t).sort()
+    const forcedMinimal = sameDay.length > 1 && sameDay[0] !== type
     out.push({
       type,
       weekday,

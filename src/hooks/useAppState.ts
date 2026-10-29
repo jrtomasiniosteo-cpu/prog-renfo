@@ -2,7 +2,7 @@
 import { useEffect, useMemo } from 'react'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { db, type SettingsRow } from '../db/schema'
-import { activeProgram, currentRefs, ensureInitialRefs, getSettings, weeksFor } from '../db/logic'
+import { activeProgram, ensureInitialRefs, getSettings, refsFromRows, weeksFor } from '../db/logic'
 import { locate, type Position, type ProgramWeek } from '../engine'
 import type { Program } from '../types/program'
 
@@ -17,21 +17,25 @@ export interface AppState {
 }
 
 export function useAppState(now: Date = new Date()): AppState {
-  const settings = useLiveQuery(() => getSettings(), [])
+  // Les liveQuery sont en lecture seule : l'amorçage (réglages, références initiales) se fait dans un effet.
+  const settings = useLiveQuery(() => db.settings.get('main'), [])
+  const refRows = useLiveQuery(() => db.refs.toArray(), [])
   const program = useMemo(() => activeProgram(settings), [settings])
   const weeks = useMemo(() => weeksFor(settings), [settings])
-  const refs = useLiveQuery(async () => { await ensureInitialRefs(program); return currentRefs() }, [program])
+  const refs = useMemo(() => (refRows ? refsFromRows(refRows) : {}), [refRows])
 
+  useEffect(() => { void getSettings() }, [])
   useEffect(() => { void ensureInitialRefs(program) }, [program])
 
   const dayKey = now.toDateString()
   const position = useMemo(() => (weeks.length ? locate(weeks, now) : null), [weeks, dayKey]) // eslint-disable-line react-hooks/exhaustive-deps
+  const seeded = settings !== undefined && refRows !== undefined && refRows.length > 0
   return {
-    ready: settings !== undefined && refs !== undefined,
+    ready: seeded,
     settings,
     program,
     weeks,
-    refs: refs ?? {},
+    refs,
     position,
     currentWeek: position?.status === 'running' ? position.week : null,
   }

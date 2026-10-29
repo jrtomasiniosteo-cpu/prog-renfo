@@ -121,13 +121,13 @@ export class RenfoDB extends Dexie {
 
   constructor() {
     super('prog-renfo')
-    this.version(1).stores({
+    this.version(2).stores({
       settings: 'id',
       refs: '++id, lift, date, weekIndex, source, sessionId',
       sessions: '++id, date, type, weekKey, weekIndex, status',
       sets: '++id, sessionId, exerciseKey, exerciseId, [sessionId+exerciseKey]',
       exerciseNotes: '++id, sessionId, [sessionId+exerciseKey]',
-      tests: '++id, date, kind',
+      tests: '++id, date, kind, sessionId',
       measures: '++id, date',
       photos: '++id, date',
       moves: '++id, weekKey, [weekKey+type]',

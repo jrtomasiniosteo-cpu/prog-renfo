@@ -107,9 +107,9 @@ label { display: block; font-size: 14px; color: var(--fg-2); margin-bottom: 4px;
 .numfield { display: flex; flex-direction: column; align-items: stretch; gap: 4px; min-width: 0; }
 .numfield .lbl { font-size: 12px; color: var(--fg-3); text-align: center; text-transform: uppercase; letter-spacing: .04em; }
 .numfield .ctl { display: flex; align-items: stretch; }
-.numfield .ctl button { min-width: 44px; padding: 0; border-radius: 12px 0 0 12px; min-height: 52px; }
+.numfield .ctl button { flex: 0 0 40px; min-width: 40px; padding: 0; border-radius: 12px 0 0 12px; min-height: 52px; font-size: 22px; }
 .numfield .ctl button:last-child { border-radius: 0 12px 12px 0; }
-.numfield .ctl input { border-radius: 0; border-left: 0; border-right: 0; min-height: 52px; min-width: 0; }
+.numfield .ctl input { flex: 1 1 auto; border-radius: 0; border-left: 0; border-right: 0; min-height: 52px; min-width: 44px; padding: 0 2px; font-size: 20px; }
 
 /* sélecteur 1-5 */
 .scale { display: flex; gap: 6px; }
