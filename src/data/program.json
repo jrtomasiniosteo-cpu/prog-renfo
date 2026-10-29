@@ -1,0 +1,113 @@
+{
+  "startDate": "2026-11-02",
+  "defaultDays": { "A": "wednesday", "B": "saturday", "C": "thursday" },
+  "mainLifts": {
+    "squat": { "name": "Back squat", "default_e1rm": 112, "weeklyCap": 5 },
+    "bench": { "name": "Développé couché", "default_e1rm": 105, "weeklyCap": 2.5 }
+  },
+  "tests": {
+    "e1rm": "Montée progressive jusqu'à une série de 3-5 reps à RIR 1 (bench et squat). L'e1RM de cette série devient la référence.",
+    "bench_1rm": "Vrai 1RM au bench, avec pareur. Montée : 5 @ 50 %, 3 @ 70 %, 2 @ 80 %, 1 @ 90 %, puis essais de 2,5 kg en 2,5 kg. La charge réussie devient la référence.",
+    "cmj": "3 essais mains sur les hanches (appli My Jump), meilleur des 3, en cm.",
+    "pullups": "Max de tractions strictes en pronation.",
+    "body": "Poids à jeun (moyenne de 3 matins), tour de bras, photos face/profil/dos."
+  },
+  "exercises": {
+    "squat":             { "name": "Back squat", "type": "main", "lift": "squat", "rest": 180, "muscles": ["jambes"] },
+    "bench_heavy":       { "name": "Développé couché (lourd)", "type": "main", "lift": "bench", "rest": 180, "note": "Pause d'1 s sur la poitrine", "muscles": ["pecs", "triceps"] },
+    "bench_volume":      { "name": "Développé couché (volume)", "type": "main", "lift": "bench", "rest": 120, "muscles": ["pecs", "triceps"] },
+    "weighted_pullup":   { "name": "Tractions lestées", "type": "accessory", "load": "added", "sets": 3, "reps": [5, 8], "rir": 1, "inc": 2.5, "rest": 90, "muscles": ["dos", "biceps"] },
+    "rdl":               { "name": "Soulevé de terre roumain", "type": "accessory", "load": "barbell", "sets": 3, "reps": [6, 10], "rir": 2, "inc": 5, "rest": 120, "muscles": ["jambes"] },
+    "hip_thrust":        { "name": "Hip thrust", "type": "accessory", "load": "barbell", "sets": 3, "reps": [8, 12], "rir": 2, "inc": 5, "rest": 120, "muscles": ["jambes"] },
+    "barbell_row":       { "name": "Rowing barre penché", "type": "accessory", "load": "barbell", "sets": 3, "reps": [8, 12], "rir": 1, "inc": 2.5, "rest": 120, "muscles": ["dos", "biceps"] },
+    "one_arm_db_row":    { "name": "Rowing haltère un bras", "type": "accessory", "load": "dumbbell", "sets": 3, "reps": [8, 12], "rir": 1, "inc": 2.5, "rest": 90, "muscles": ["dos", "biceps"] },
+    "db_shoulder_press": { "name": "Développé militaire haltères assis", "type": "accessory", "load": "dumbbell", "sets": 3, "reps": [8, 12], "rir": 1, "inc": 2.5, "rest": 90, "muscles": ["épaules", "triceps"] },
+    "barbell_ohp":       { "name": "Développé militaire barre debout", "type": "accessory", "load": "barbell", "sets": 3, "reps": [6, 10], "rir": 1, "inc": 2.5, "rest": 120, "muscles": ["épaules", "triceps"] },
+    "dips":              { "name": "Dips (lestés dès 12 reps faciles)", "type": "accessory", "load": "added", "sets": 3, "reps": [8, 12], "rir": 1, "inc": 2.5, "rest": 0, "superset": "lateral_raise", "muscles": ["pecs", "triceps"] },
+    "close_grip_bench":  { "name": "Développé couché prise serrée", "type": "accessory", "load": "barbell", "sets": 3, "reps": [6, 10], "rir": 1, "inc": 2.5, "rest": 0, "superset": "lateral_raise", "muscles": ["pecs", "triceps"] },
+    "lateral_raise":     { "name": "Élévations latérales haltères", "type": "accessory", "load": "dumbbell", "sets": 3, "reps": [12, 20], "rir": 0, "inc": 1, "rest": 90, "muscles": ["épaules"] },
+    "ez_curl":           { "name": "Curl barre EZ", "type": "accessory", "load": "barbell", "sets": 3, "reps": [10, 15], "rir": 0, "inc": 2.5, "rest": 0, "superset": "triceps_ext", "muscles": ["biceps"] },
+    "triceps_ext":       { "name": "Extension triceps (barre front ou élastique)", "type": "accessory", "load": "barbell", "sets": 3, "reps": [10, 15], "rir": 0, "inc": 2.5, "rest": 60, "muscles": ["triceps"] },
+    "box_jump_b":        { "name": "Box jump", "type": "plyo", "sets": 3, "reps": 3, "rest": 60, "measure": "box_cm" },
+    "tempo_pullup":      { "name": "Tractions tempo (3 s de descente)", "type": "accessory", "load": "bodyweight", "sets": 4, "reps": [6, 10], "rir": 1, "rest": 120, "progressions": ["Tractions tempo 3 s", "Tractions archer", "Tractions archer tempo 3 s"], "muscles": ["dos", "biceps"] },
+    "ring_pushup":       { "name": "Pompes aux anneaux pieds surélevés", "type": "accessory", "load": "bodyweight", "sets": 4, "reps": [8, 15], "rir": 1, "rest": 90, "progressions": ["Pompes anneaux pieds au sol", "Pompes anneaux pieds surélevés", "Dips aux anneaux", "Dips aux anneaux tempo 3 s"], "startProgression": 1, "muscles": ["pecs", "triceps"] },
+    "ring_row":          { "name": "Rowing aux anneaux", "type": "accessory", "load": "bodyweight", "sets": 3, "reps": [10, 15], "rir": 1, "rest": 90, "progressions": ["Corps à 45°", "Corps horizontal", "Pieds surélevés", "Pieds surélevés tempo 3 s"], "startProgression": 1, "muscles": ["dos", "biceps"] },
+    "kb_lateral_raise":  { "name": "Élévations latérales KB 4 kg", "type": "accessory", "load": "fixed", "fixedLoad": 4, "sets": 3, "reps": [15, 25], "rir": 0, "rest": 0, "superset": "band_face_pull", "muscles": ["épaules"] },
+    "band_face_pull":    { "name": "Face pull élastique", "type": "accessory", "load": "band", "sets": 3, "reps": [15, 20], "rir": 1, "rest": 60, "muscles": ["épaules", "dos"] },
+    "ring_curl":         { "name": "Curl aux anneaux", "type": "accessory", "load": "bodyweight", "sets": 3, "reps": [10, 15], "rir": 0, "rest": 0, "superset": "ring_triceps", "progressions": ["Pieds loin", "Pieds proches", "Pieds surélevés"], "muscles": ["biceps"] },
+    "ring_triceps":      { "name": "Extension triceps aux anneaux", "type": "accessory", "load": "bodyweight", "sets": 3, "reps": [10, 15], "rir": 1, "rest": 60, "progressions": ["Corps à 45°", "Corps plus incliné", "Proche de l'horizontale"], "muscles": ["triceps"] }
+  },
+  "sessions": {
+    "A": {
+      "name": "A — Force + détente",
+      "place": "Box",
+      "warmup": "Rameur 3 min, mobilité hanches/épaules, 2 × 5 CMJ progressifs",
+      "order": ["PLYO_A", "squat", "bench_heavy", "weighted_pullup", "LOWER_ACC"],
+      "minimal": ["PLYO_A", "squat", "bench_heavy"]
+    },
+    "B": {
+      "name": "B — Hypertrophie haut du corps",
+      "place": "Box",
+      "warmup": "Échauffement général + box jumps",
+      "order": ["box_jump_b", "bench_volume", "ROW", "PRESS", "DIP", "lateral_raise", "ez_curl", "triceps_ext"],
+      "minimal": ["bench_volume", "ROW", "DIP", "lateral_raise"]
+    },
+    "C": {
+      "name": "C — Haut du corps maison (bonus)",
+      "place": "Maison",
+      "warmup": "Mobilité épaules, 2 séries faciles de tractions",
+      "order": ["tempo_pullup", "ring_pushup", "ring_row", "kb_lateral_raise", "band_face_pull", "ring_curl", "ring_triceps"],
+      "minimal": null,
+      "skippable": true
+    }
+  },
+  "slots": {
+    "default": { "LOWER_ACC": "rdl", "ROW": "barbell_row", "PRESS": "db_shoulder_press", "DIP": "dips" },
+    "macro2":  { "LOWER_ACC": "hip_thrust", "ROW": "one_arm_db_row", "PRESS": "barbell_ohp", "DIP": "close_grip_bench" }
+  },
+  "macrocycles": [
+    {
+      "id": "macro1", "name": "Macrocycle 1", "weeks": 16, "slots": "default",
+      "blocks": [
+        { "id": "M1", "name": "Accumulation", "weeks": [1, 4], "deloadWeek": 4, "testWeeks": { "1": ["e1rm", "cmj", "pullups", "body"] },
+          "main": { "squat": { "sets": 4, "reps": 6, "pct": 0.72, "rir": 3 }, "bench_heavy": { "sets": 4, "reps": 5, "pct": 0.75, "rir": 2.5 }, "bench_volume": { "sets": 3, "reps": 10, "pct": 0.65, "rir": 2 } },
+          "plyo": [ { "name": "Box jump", "sets": 4, "reps": 4, "measure": "box_cm" }, { "name": "Saut en longueur", "sets": 3, "reps": 3, "measure": "cm" } ] },
+        { "id": "M2", "name": "Hypertrophie-force", "weeks": [5, 8], "deloadWeek": 8, "testWeeks": { "8": ["e1rm", "cmj", "pullups", "body"] },
+          "main": { "squat": { "sets": 4, "reps": 5, "pct": 0.78, "rir": 2 }, "bench_heavy": { "sets": 5, "reps": 4, "pct": 0.80, "rir": 2 }, "bench_volume": { "sets": 4, "reps": 8, "pct": 0.70, "rir": 2 } },
+          "plyo": [ { "name": "Drop jump 30 cm", "sets": 4, "reps": 4, "measure": "none" }, { "name": "Sauts de haies", "sets": 3, "reps": 5, "measure": "none" } ] },
+        { "id": "M3", "name": "Force", "weeks": [9, 12], "deloadWeek": 12,
+          "main": { "squat": { "sets": 5, "reps": 3, "pct": 0.85, "rir": 2 }, "bench_heavy": { "sets": 5, "reps": 3, "pct": 0.86, "rir": 1.5 }, "bench_volume": { "sets": 4, "reps": 6, "pct": 0.75, "rir": 2 } },
+          "plyo": [ { "name": "Depth jump 40 cm", "sets": 4, "reps": 3, "measure": "none" }, { "name": "Jump squat trap bar 20-30 %", "sets": 3, "reps": 3, "measure": "none" } ] },
+        { "id": "M4", "name": "Puissance", "weeks": [13, 16], "testWeeks": { "16": ["bench_1rm", "e1rm", "cmj", "pullups", "body"] }, "dropExercises": ["LOWER_ACC"],
+          "main": { "squat": { "sets": 3, "reps": 2, "pct": 0.90, "rir": 2 }, "bench_heavy": { "top": { "reps": 1, "rpe": 8 }, "sets": 3, "reps": 3, "pct": 0.85, "rir": 2 }, "bench_volume": { "sets": 3, "reps": 5, "pct": 0.78, "rir": 2 } },
+          "plyo": [ { "name": "Depth jump 40 cm", "sets": 4, "reps": 3, "measure": "none" }, { "name": "CMJ max", "sets": 3, "reps": 3, "measure": "cm" } ] }
+      ]
+    },
+    {
+      "id": "macro2", "name": "Macrocycle 2", "weeks": 16, "slots": "macro2", "goal": "Bench 120 kg en semaine 16",
+      "blocks": [
+        { "id": "M5", "name": "Accumulation", "weeks": [1, 4], "deloadWeek": 4,
+          "main": { "squat": { "sets": 4, "reps": 6, "pct": 0.75, "rir": 3 }, "bench_heavy": { "sets": 4, "reps": 6, "pct": 0.77, "rir": 2.5 }, "bench_volume": { "sets": 4, "reps": 10, "pct": 0.67, "rir": 2 } },
+          "plyo": [ { "name": "Bonds unilatéraux (par jambe)", "sets": 4, "reps": 4, "measure": "none" }, { "name": "Box jump", "sets": 3, "reps": 3, "measure": "box_cm" } ] },
+        { "id": "M6", "name": "Hypertrophie-force", "weeks": [5, 8], "deloadWeek": 8, "testWeeks": { "8": ["e1rm", "cmj", "pullups", "body"] },
+          "main": { "squat": { "sets": 4, "reps": 4, "pct": 0.82, "rir": 2 }, "bench_heavy": { "sets": 5, "reps": 4, "pct": 0.82, "rir": 2 }, "bench_volume": { "sets": 4, "reps": 8, "pct": 0.72, "rir": 2 } },
+          "plyo": [ { "name": "Drop jump 40 cm", "sets": 4, "reps": 4, "measure": "none" }, { "name": "Sauts de haies", "sets": 3, "reps": 5, "measure": "none" } ] },
+        { "id": "M7", "name": "Force", "weeks": [9, 12], "deloadWeek": 12,
+          "main": { "squat": { "sets": 5, "reps": 3, "pct": 0.88, "rir": 2 }, "bench_heavy": { "sets": 5, "reps": 2, "pct": 0.89, "rir": 1.5 }, "bench_volume": { "sets": 4, "reps": 5, "pct": 0.78, "rir": 2 } },
+          "plyo": [ { "name": "Depth jump 40 cm", "sets": 4, "reps": 3, "measure": "none" }, { "name": "Jump squat trap bar", "sets": 3, "reps": 3, "measure": "none" } ] },
+        { "id": "M8", "name": "Réalisation", "weeks": [13, 16], "testWeeks": { "16": ["bench_1rm", "e1rm", "cmj", "pullups", "body"] },
+          "main": { "squat": { "sets": 2, "reps": 2, "pct": 0.92, "rir": 2 }, "bench_heavy": { "top": { "reps": 1, "rpe": 8.5 }, "sets": 2, "reps": 3, "pct": 0.87, "rir": 2 }, "bench_volume": { "sets": 3, "reps": 4, "pct": 0.80, "rir": 2 } },
+          "plyo": [ { "name": "CMJ max", "sets": 3, "reps": 3, "measure": "cm" }, { "name": "Depth jump 40 cm", "sets": 3, "reps": 3, "measure": "none" } ] }
+      ]
+    },
+    {
+      "id": "macro3", "name": "Macrocycle 3 — Maintien été (saison de chasse)", "weeks": 13, "slots": "macro2",
+      "rules": { "sessions": ["A", "B"], "dropSession": "C", "mainSetsMax": 2, "accessorySets": 2, "plyoContactsMax": 20, "singleSessionWeek": "A + bench_volume en fin de séance" },
+      "blocks": [
+        { "id": "M9", "name": "Maintien", "weeks": [1, 13], "testWeeks": { "13": ["e1rm", "cmj", "pullups", "body"] },
+          "main": { "squat": { "sets": 2, "reps": 3, "pct": 0.87, "rir": 2 }, "bench_heavy": { "sets": 2, "reps": 3, "pct": 0.87, "rir": 2 }, "bench_volume": { "sets": 2, "reps": 6, "pct": 0.77, "rir": 2 } },
+          "plyo": [ { "name": "CMJ / box jump", "sets": 4, "reps": 4, "measure": "box_cm" } ] }
+      ]
+    }
+  ]
+}
